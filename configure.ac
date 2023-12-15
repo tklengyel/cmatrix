@@ -111,27 +111,27 @@ if test "x$enable_fonts" != xfalse; then
       AC_DEFINE_UNQUOTED(HAVE_CONSOLECHARS, $CONSOLECHARS)
   fi
 
-  if test x$CONSOLECHARS != x -o x$CONSOLECHARS != x'"$CONSOLECHARS"'; then
-       if test x$SETFONT != x -o x$SETFONT != x'"$SETFONT"'; then
+  #if test x$CONSOLECHARS != x -o x$CONSOLECHARS != x'"$CONSOLECHARS"'; then
+  #     if test x$SETFONT != x -o x$SETFONT != x'"$SETFONT"'; then
 
 	  dnl Now look for the console fonts directory
-	  AC_CHECK_FILES([/usr/lib/kbd/consolefonts /usr/share/consolefonts])
+	  #AC_CHECK_FILES([/usr/lib/kbd/consolefonts /usr/share/consolefonts])
 
-	  if test "x$ac_cv_file__usr_lib_kbd_consolefonts" = "xno"; then
-	      if test "x$ac_cv_file__usr_share_consolefonts" = "xno"; then
-		  AC_MSG_WARN([
+	  #if test "x$ac_cv_file__usr_lib_kbd_consolefonts" = "xno"; then
+	  #    if test "x$ac_cv_file__usr_share_consolefonts" = "xno"; then
+#		  AC_MSG_WARN([
 
-*** You do not appear to have a consolefonts directory in a standard location
-*** (/usr/lib/kbd or /usr/share), even though you appear to have the
-*** consolechars and/or setfont command.  The matrix font for the console
-*** will not be installed.  This means you will not be able to use the
-*** matrix console font (and the -l command line switch) unless the font
-*** is located in your current directory when you run CMatrix.
-])
-	      fi
-	  fi
-       fi
-  fi
+#*** You do not appear to have a consolefonts directory in a standard location
+#*** (/usr/lib/kbd or /usr/share), even though you appear to have the
+#*** consolechars and/or setfont command.  The matrix font for the console
+#*** will not be installed.  This means you will not be able to use the
+#*** matrix console font (and the -l command line switch) unless the font
+#*** is located in your current directory when you run CMatrix.
+#])
+#	      fi
+#	  fi
+ #      fi
+  #fi
 
   AC_PATH_PROG(MKFONTDIR, mkfontdir, "", $PATH:/usr/bin:/usr/bin/X11:/usr/local/bin/X11:/usr/X11R6/bin:/usr/local/bin:/sbin:/usr/sbin)
   AC_CHECK_FILES([/usr/share/fonts/misc /usr/share/X11/fonts/misc /usr/X11R6/lib/X11/fonts/misc])
