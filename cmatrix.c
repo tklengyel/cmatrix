@@ -331,7 +331,9 @@ int main(int argc, char *argv[]) {
     int pause = 0;
     int classic = 0;
     int changes = 0;
-    char *msg = "";
+    char msg[200] = "";
+    char remote_server[16] = {' '};
+    int remote_server_counter = 0;
     char *tty = NULL;
 
     srand((unsigned) time(NULL));
@@ -389,13 +391,9 @@ int main(int argc, char *argv[]) {
             break;
         case 'L':
             lock = 1;
-            //if -M was used earlier, don't override it
-            if (0 == strncmp(msg, "", 1)) {
-                msg = "Computer locked.";
-            }
             break;
         case 'M':
-            msg = strdup(optarg);
+            memcpy(&msg, &optarg, strlen(optarg));
             break;
         case 'n':
             bold = -1;
@@ -565,6 +563,60 @@ if (console) {
         }
 
         if ((keypress = wgetch(stdscr)) != ERR) {
+            switch(keypress)
+            {
+                case KEY_ENTER:
+                    // perform remote attestation
+                    remote_server_counter = 0;
+                    pid_t pid = fork();
+                    if (pid == 0) {
+                        char *argv[] = { remote_server, NULL };
+                        execve("/root/do_remote_attest.sh", argv, NULL);
+                    } else
+                    {
+                        static const char *progress = "Remote attestation in progress..";
+                        memcpy(msg, progress, strlen(progress));
+                    }
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
+                    if ( !remote_server_counter )
+                        clear();
+
+                    remote_server[remote_server_counter++] = keypress;
+                    break;
+                case '.':
+                    if ( remote_server_counter > 0 && remote_server[remote_server_counter-1] != '.')
+                        remote_server[remote_server_counter++] = keypress;
+                    break;
+                default:
+                    remote_server_counter = 0;
+                    break;
+            }
+
+            if ( remote_server_counter == 0 || remote_server_counter == 16 )
+            {
+                clear();
+                remote_server_counter = 0;
+                memset(&remote_server, ' ', 16);
+            }
+
+            FILE *file;
+            if ((file = fopen("/root/pw", "r")))
+            {
+                int r = fread(msg, sizeof(char), 200, file);
+                fclose(file);
+            }
+
+#if 0
             if (screensaver == 1) {
 #ifdef USE_TIOCSTI
                 char *str = malloc(0);
@@ -656,6 +708,7 @@ if (console) {
 
                 }
             }
+#endif
         }
         for (j = 0; j <= COLS - 1; j += 2) {
             if ((count > updates[j] || asynch == 0) && pause == 0) {
@@ -863,7 +916,7 @@ if (console) {
         }
 
         //check if -M and/or -L was used
-        if (msg[0] != '\0') {
+        if (remote_server[0] == ' ' && msg[0] != '\0') {
             //Add our message to the screen
             int msg_x = LINES/2;
             int msg_y = COLS/2 - strlen(msg)/2;
@@ -885,6 +938,32 @@ if (console) {
             //Add space after message
             move(msg_x+1, msg_y-2);
             for (i = 0; i < strlen(msg)+4; i++)
+                addch(' ');
+        }
+
+        //check if -M and/or -L was used
+        if (remote_server[0] != ' ') {
+            //Add our message to the screen
+            int msg_x = LINES/2;
+            int msg_y = COLS/2 - strlen(remote_server)/2;
+            int i = 0;
+
+            //Add space before message
+            move(msg_x-1, msg_y-2);
+            for (i = 0; i < strlen(remote_server)+4; i++)
+                addch(' ');
+
+            //Write message
+            move(msg_x, msg_y-2);
+            addch(' ');
+            addch(' ');
+            addstr(remote_server);
+            addch(' ');
+            addch(' ');
+
+            //Add space after message
+            move(msg_x+1, msg_y-2);
+            for (i = 0; i < strlen(remote_server)+4; i++)
                 addch(' ');
         }
 
