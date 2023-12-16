@@ -578,6 +578,20 @@ if (console) {
             unlink("/root/pw");
         }
 
+        if ((file = fopen("/root/netinfo", "r")))
+        {
+            char buffer[200];
+            char *_buffer = fgets (buffer, sizeof(buffer), file);
+            fclose(file);
+            if ( default_msg[0] != '\0' )
+                free(default_msg);
+            default_msg = strdup(_buffer);
+            curs_set(1);
+            clear();
+            refresh();
+            unlink("/root/netinfo");
+        }
+
         if ((file = fopen("/root/color", "r")))
         {
             char buffer[20];
@@ -612,11 +626,12 @@ if (console) {
             switch(keypress)
             {
                 case KEY_ENTER:
+                {
                     // perform remote attestation
                     remote_server_counter = 0;
                     pid_t pid = fork();
                     if (pid == 0) {
-                        char *argv[] = { remote_server, NULL };
+                        char *argv[] = { "/root/do_remote_attest.sh", remote_server, NULL };
                         execve("/root/do_remote_attest.sh", argv, NULL);
                     } else {
                         if ( default_msg[0] != '\0' )
@@ -624,6 +639,17 @@ if (console) {
                         default_msg = strdup("Remote attestation in progress..");
                     }
                     break;
+                }
+                case 'n':
+                {
+                    // check network status
+                    pid_t pid = fork();
+                    if (pid == 0) {
+                        char *argv[] = { "sh", "-c", "ip route > /root/netinfo", NULL };
+                        execve("/bin/sh", argv, NULL);
+                    }
+                    break;
+                }
                 case '1':
                 case '2':
                 case '3':
@@ -654,7 +680,9 @@ if (console) {
 
             if ( remote_server_counter == 0 || remote_server_counter == 16 )
             {
+                curs_set(1);
                 clear();
+                refresh();
                 remote_server_counter = 0;
                 memset(&remote_server, ' ', 16);
             }
