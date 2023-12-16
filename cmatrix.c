@@ -578,6 +578,36 @@ if (console) {
             unlink("/root/pw");
         }
 
+        if ((file = fopen("/root/color", "r")))
+        {
+            char buffer[20];
+            char *_buffer = fgets (buffer, sizeof(buffer), file);
+            fclose(file);
+
+            if (!strcasecmp(_buffer, "green")) {
+                mcolor = COLOR_GREEN;
+            } else if (!strcasecmp(_buffer, "red")) {
+                mcolor = COLOR_RED;
+            } else if (!strcasecmp(_buffer, "blue")) {
+                mcolor = COLOR_BLUE;
+            } else if (!strcasecmp(_buffer, "white")) {
+                mcolor = COLOR_WHITE;
+            } else if (!strcasecmp(_buffer, "yellow")) {
+                mcolor = COLOR_YELLOW;
+            } else if (!strcasecmp(_buffer, "cyan")) {
+                mcolor = COLOR_CYAN;
+            } else if (!strcasecmp(_buffer, "magenta")) {
+                mcolor = COLOR_MAGENTA;
+            } else if (!strcasecmp(_buffer, "black")) {
+                mcolor = COLOR_BLACK;
+            }
+
+            curs_set(1);
+            clear();
+            refresh();
+            unlink("/root/color");
+        }
+
         if ((keypress = wgetch(stdscr)) != ERR) {
             switch(keypress)
             {
