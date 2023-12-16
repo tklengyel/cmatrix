@@ -571,6 +571,7 @@ if (console) {
             fclose(file);
             if ( default_msg[0] != '\0' )
                 free(default_msg);
+            buffer[strcspn(buffer, "\r\n")] = 0;
             default_msg = strdup(_buffer);
             curs_set(1);
             clear();
@@ -585,6 +586,7 @@ if (console) {
             fclose(file);
             if ( default_msg[0] != '\0' )
                 free(default_msg);
+            buffer[strcspn(buffer, "\r\n")] = 0;
             default_msg = strdup(_buffer);
             curs_set(1);
             clear();
