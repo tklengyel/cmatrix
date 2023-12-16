@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
     int classic = 0;
     int changes = 0;
     char *msg = NULL;
-    char *default_msg = "";
+    char *default_msg = NULL;
     char remote_server[16] = {' '};
     int remote_server_counter = 0;
     char *tty = NULL;
@@ -569,8 +569,7 @@ if (console) {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
-            if ( default_msg[0] != '\0' )
-                free(default_msg);
+            free(default_msg);
             buffer[strcspn(buffer, "\r\n")] = 0;
             default_msg = strdup(_buffer);
             curs_set(1);
@@ -584,8 +583,7 @@ if (console) {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
-            if ( default_msg[0] != '\0' )
-                free(default_msg);
+            free(default_msg);
             buffer[strcspn(buffer, "\r\n")] = 0;
             default_msg = strdup(_buffer);
             curs_set(1);
@@ -650,8 +648,7 @@ if (console) {
                         char *argv[] = { "/root/do_remote_attest.sh", remote_server, NULL };
                         execve("/root/do_remote_attest.sh", argv, NULL);
                     } else {
-                        if ( default_msg[0] != '\0' )
-                            free(default_msg);
+                        free(default_msg);
                         default_msg = strdup("Remote attestation in progress..");
                     }
                     break;
@@ -705,7 +702,9 @@ if (console) {
                 clear();
                 refresh();
                 remote_server_counter = 0;
-                memset(&remote_server, ' ', 16);
+                memset(&remote_server, 0, 16);
+                remote_server[0] = ' ';
+
             }
 
 #if 0
