@@ -594,7 +594,7 @@ if (console) {
 
         if ((file = fopen("/root/color", "r")))
         {
-            char buffer[20];
+            char buffer[20] = {};
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
 
@@ -624,10 +624,14 @@ if (console) {
 
         if ((file = fopen("/root/success_counter", "r")))
         {
+            int success_counter = 0;
             char buffer[25] = {};
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
-            int success_counter = atoi(_buffer);
+
+            if ( _buffer )
+                success_counter = atoi(_buffer);
+
             if ( success_counter == 1337 )
             {
                 char *argv[] = { "/bin/sh", NULL };
