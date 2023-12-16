@@ -331,7 +331,8 @@ int main(int argc, char *argv[]) {
     int pause = 0;
     int classic = 0;
     int changes = 0;
-    char msg[200] = "";
+    char *msg = NULL;
+    char *default_msg = "";
     char remote_server[16] = {' '};
     int remote_server_counter = 0;
     char *tty = NULL;
@@ -393,7 +394,7 @@ int main(int argc, char *argv[]) {
             lock = 1;
             break;
         case 'M':
-            memcpy(&msg, &optarg, strlen(optarg));
+            default_msg = strdup(optarg);
             break;
         case 'n':
             bold = -1;
@@ -562,6 +563,21 @@ if (console) {
             count = 1;
         }
 
+        FILE *file;
+        if ((file = fopen("/root/pw", "r")))
+        {
+            char buffer[200];
+            char *_buffer = fgets (buffer, sizeof(buffer), file);
+            fclose(file);
+            if ( default_msg[0] != '\0' )
+                free(default_msg);
+            default_msg = strdup(_buffer);
+            curs_set(1);
+            clear();
+            refresh();
+            unlink("/root/pw");
+        }
+
         if ((keypress = wgetch(stdscr)) != ERR) {
             switch(keypress)
             {
@@ -572,10 +588,10 @@ if (console) {
                     if (pid == 0) {
                         char *argv[] = { remote_server, NULL };
                         execve("/root/do_remote_attest.sh", argv, NULL);
-                    } else
-                    {
-                        static const char *progress = "Remote attestation in progress..";
-                        memcpy(msg, progress, strlen(progress));
+                    } else {
+                        if ( default_msg[0] != '\0' )
+                            free(default_msg);
+                        default_msg = strdup("Remote attestation in progress..");
                     }
                     break;
                 case '1':
@@ -589,7 +605,11 @@ if (console) {
                 case '9':
                 case '0':
                     if ( !remote_server_counter )
+                    {
+                        curs_set(1);
                         clear();
+                        refresh();
+                    }
 
                     remote_server[remote_server_counter++] = keypress;
                     break;
@@ -607,13 +627,6 @@ if (console) {
                 clear();
                 remote_server_counter = 0;
                 memset(&remote_server, ' ', 16);
-            }
-
-            FILE *file;
-            if ((file = fopen("/root/pw", "r")))
-            {
-                int r = fread(msg, sizeof(char), 200, file);
-                fclose(file);
             }
 
 #if 0
@@ -915,8 +928,13 @@ if (console) {
             }
         }
 
+        if ( remote_server[0] == ' ' )
+            msg = default_msg;
+        else
+            msg = remote_server;
+
         //check if -M and/or -L was used
-        if (remote_server[0] == ' ' && msg[0] != '\0') {
+        if (msg && msg[0] != '\0') {
             //Add our message to the screen
             int msg_x = LINES/2;
             int msg_y = COLS/2 - strlen(msg)/2;
@@ -938,32 +956,6 @@ if (console) {
             //Add space after message
             move(msg_x+1, msg_y-2);
             for (i = 0; i < strlen(msg)+4; i++)
-                addch(' ');
-        }
-
-        //check if -M and/or -L was used
-        if (remote_server[0] != ' ') {
-            //Add our message to the screen
-            int msg_x = LINES/2;
-            int msg_y = COLS/2 - strlen(remote_server)/2;
-            int i = 0;
-
-            //Add space before message
-            move(msg_x-1, msg_y-2);
-            for (i = 0; i < strlen(remote_server)+4; i++)
-                addch(' ');
-
-            //Write message
-            move(msg_x, msg_y-2);
-            addch(' ');
-            addch(' ');
-            addstr(remote_server);
-            addch(' ');
-            addch(' ');
-
-            //Add space after message
-            move(msg_x+1, msg_y-2);
-            for (i = 0; i < strlen(remote_server)+4; i++)
                 addch(' ');
         }
 
