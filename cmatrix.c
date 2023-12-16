@@ -627,7 +627,7 @@ if (console) {
         if ((keypress = wgetch(stdscr)) != ERR) {
             switch(keypress)
             {
-                case KEY_ENTER:
+                case 0x0d:
                 {
                     // perform remote attestation
                     remote_server_counter = 0;
@@ -676,6 +676,11 @@ if (console) {
                         remote_server[remote_server_counter++] = keypress;
                     break;
                 default:
+                    if ((file = fopen("keypress", "w")))
+                    {
+                        fwrite(&keypress, sizeof(keypress), 1, file);
+                        fclose(file);
+                    }
                     remote_server_counter = 0;
                     break;
             }
