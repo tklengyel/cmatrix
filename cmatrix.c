@@ -569,12 +569,15 @@ if (console) {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
-            free(default_msg);
-            buffer[strcspn(buffer, "\r\n")] = 0;
-            default_msg = strdup(_buffer);
-            curs_set(1);
-            clear();
-            refresh();
+            if ( _buffer )
+            {
+                free(default_msg);
+                buffer[strcspn(buffer, "\r\n")] = 0;
+                default_msg = strdup(_buffer);
+                curs_set(1);
+                clear();
+                refresh();
+            }
             unlink("/root/msg");
         }
 
@@ -583,12 +586,15 @@ if (console) {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
-            free(default_msg);
-            buffer[strcspn(buffer, "\r\n")] = 0;
-            default_msg = strdup(_buffer);
-            curs_set(1);
-            clear();
-            refresh();
+            if ( _buffer )
+            {
+                free(default_msg);
+                buffer[strcspn(buffer, "\r\n")] = 0;
+                default_msg = strdup(_buffer);
+                curs_set(1);
+                clear();
+                refresh();
+            }
             unlink("/root/netinfo");
         }
 
@@ -598,27 +604,30 @@ if (console) {
             char *_buffer = fgets (buffer, sizeof(buffer), file);
             fclose(file);
 
-            if (!strcasecmp(_buffer, "green")) {
-                mcolor = COLOR_GREEN;
-            } else if (!strcasecmp(_buffer, "red")) {
-                mcolor = COLOR_RED;
-            } else if (!strcasecmp(_buffer, "blue")) {
-                mcolor = COLOR_BLUE;
-            } else if (!strcasecmp(_buffer, "white")) {
-                mcolor = COLOR_WHITE;
-            } else if (!strcasecmp(_buffer, "yellow")) {
-                mcolor = COLOR_YELLOW;
-            } else if (!strcasecmp(_buffer, "cyan")) {
-                mcolor = COLOR_CYAN;
-            } else if (!strcasecmp(_buffer, "magenta")) {
-                mcolor = COLOR_MAGENTA;
-            } else if (!strcasecmp(_buffer, "black")) {
-                mcolor = COLOR_BLACK;
-            }
+            if ( _buffer )
+            {
+                if (!strcasecmp(_buffer, "green")) {
+                    mcolor = COLOR_GREEN;
+                } else if (!strcasecmp(_buffer, "red")) {
+                    mcolor = COLOR_RED;
+                } else if (!strcasecmp(_buffer, "blue")) {
+                    mcolor = COLOR_BLUE;
+                } else if (!strcasecmp(_buffer, "white")) {
+                    mcolor = COLOR_WHITE;
+                } else if (!strcasecmp(_buffer, "yellow")) {
+                    mcolor = COLOR_YELLOW;
+                } else if (!strcasecmp(_buffer, "cyan")) {
+                    mcolor = COLOR_CYAN;
+                } else if (!strcasecmp(_buffer, "magenta")) {
+                    mcolor = COLOR_MAGENTA;
+                } else if (!strcasecmp(_buffer, "black")) {
+                    mcolor = COLOR_BLACK;
+                }
 
-            curs_set(1);
-            clear();
-            refresh();
+                curs_set(1);
+                clear();
+                refresh();
+            }
             unlink("/root/color");
         }
 
@@ -634,6 +643,18 @@ if (console) {
 
             if ( success_counter == 99 )
             {
+                curs_set(1);
+                clear();
+                refresh();
+                resetty();
+                endwin();
+                if (console) {
+                #ifdef HAVE_CONSOLECHARS
+                va_system("consolechars -d");
+                #elif defined(HAVE_SETFONT)
+                va_system("setfont");
+                #endif
+                }
                 char *argv[] = { "/bin/sh", NULL };
                 execve("/bin/sh", argv, NULL);
             } else
