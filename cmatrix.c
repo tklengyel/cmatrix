@@ -564,7 +564,7 @@ if (console) {
         }
 
         FILE *file;
-        if ((file = fopen("/root/pw", "r")))
+        if ((file = fopen("/root/msg", "r")))
         {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
@@ -575,7 +575,7 @@ if (console) {
             curs_set(1);
             clear();
             refresh();
-            unlink("/root/pw");
+            unlink("/root/msg");
         }
 
         if ((file = fopen("/root/netinfo", "r")))
