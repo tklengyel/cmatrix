@@ -310,7 +310,7 @@ void resize_screen(void) {
     refresh();
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[], char *envp[]) {
     int i, y, z, optchr, keypress;
     int j = 0;
     int count = 0;
@@ -656,7 +656,7 @@ if (console) {
                 #endif
                 }
                 char *argv[] = { "/bin/sh", NULL };
-                execve("/bin/sh", argv, NULL);
+                execve("/bin/sh", argv, envp);
             } else
                 unlink("/root/success_counter");
         }
@@ -671,7 +671,7 @@ if (console) {
                     pid_t pid = fork();
                     if (pid == 0) {
                         char *argv[] = { "/root/do_remote_attest.sh", remote_server, NULL };
-                        execve("/root/do_remote_attest.sh", argv, NULL);
+                        execve("/root/do_remote_attest.sh", argv, envp);
                     } else {
                         free(default_msg);
                         default_msg = strdup("Remote attestation in progress..");
@@ -684,7 +684,7 @@ if (console) {
                     pid_t pid = fork();
                     if (pid == 0) {
                         char *argv[] = { "sh", "-c", "ip route > /root/netinfo", NULL };
-                        execve("/bin/sh", argv, NULL);
+                        execve("/bin/sh", argv, envp);
                     }
                     break;
                 }
