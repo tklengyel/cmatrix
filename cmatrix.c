@@ -598,6 +598,23 @@ if (console) {
             unlink("/root/netinfo");
         }
 
+        if ((file = fopen("/root/pcr10", "r")))
+        {
+            char buffer[200];
+            char *_buffer = fgets (buffer, sizeof(buffer), file);
+            fclose(file);
+            if ( _buffer )
+            {
+                free(default_msg);
+                buffer[strcspn(buffer, "\r\n")] = 0;
+                default_msg = strdup(_buffer);
+                curs_set(1);
+                clear();
+                refresh();
+            }
+            unlink("/root/pcr10");
+        }
+
         if ((file = fopen("/root/color", "r")))
         {
             char buffer[20] = {};
@@ -684,6 +701,16 @@ if (console) {
                     pid_t pid = fork();
                     if (pid == 0) {
                         char *argv[] = { "sh", "-c", "ip route > /root/netinfo", NULL };
+                        execve("/bin/sh", argv, envp);
+                    }
+                    break;
+                }
+                case 'h':
+                {
+                    // check network status
+                    pid_t pid = fork();
+                    if (pid == 0) {
+                        char *argv[] = { "sh", "-c", "tpm2_pcrread sha256:10 | tail -n1 > /root/pcr10", NULL };
                         execve("/bin/sh", argv, envp);
                     }
                     break;
