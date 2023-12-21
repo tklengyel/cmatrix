@@ -598,7 +598,7 @@ if (console) {
             unlink("/root/netinfo");
         }
 
-        if ((file = fopen("/root/pcr10", "r")))
+        if ((file = fopen("/root/pcr", "r")))
         {
             char buffer[200];
             char *_buffer = fgets (buffer, sizeof(buffer), file);
@@ -612,7 +612,7 @@ if (console) {
                 clear();
                 refresh();
             }
-            unlink("/root/pcr10");
+            unlink("/root/pcr");
         }
 
         if ((file = fopen("/root/color", "r")))
@@ -710,7 +710,7 @@ if (console) {
                     // check network status
                     pid_t pid = fork();
                     if (pid == 0) {
-                        char *argv[] = { "sh", "-c", "/root/pcrread.sh sha256:10 > /root/pcr10", NULL };
+                        char *argv[] = { "sh", "-c", "/root/pcrread.sh sha256:11 > /root/pcr", NULL };
                         execve("/bin/sh", argv, envp);
                     }
                     break;
