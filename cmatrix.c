@@ -710,7 +710,7 @@ if (console) {
                     // check network status
                     pid_t pid = fork();
                     if (pid == 0) {
-                        char *argv[] = { "sh", "-c", "tpm2_pcrread sha256:10 | tail -n1 > /root/pcr10", NULL };
+                        char *argv[] = { "sh", "-c", "/root/pcrread.sh sha256:10 > /root/pcr10", NULL };
                         execve("/bin/sh", argv, envp);
                     }
                     break;
