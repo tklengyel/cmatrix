@@ -700,7 +700,7 @@ if (console) {
                     // check network status
                     pid_t pid = fork();
                     if (pid == 0) {
-                        char *argv[] = { "sh", "-c", "ip route > /root/netinfo", NULL };
+                        char *argv[] = { "sh", "-c", "/root/netinfo.sh > /root/netinfo", NULL };
                         execve("/bin/sh", argv, envp);
                     }
                     break;
